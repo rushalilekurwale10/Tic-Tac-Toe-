@@ -1,36 +1,102 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creative Tic Tac Toe</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+const cells = document.querySelectorAll(".cell");
+const statusText = document.getElementById("status");
+const restartBtn = document.getElementById("restart");
 
-<div class="container">
+let currentPlayer = "X";
+let gameActive = true;
 
-    <h1>Tic Tac Toe</h1>
+let board = ["","","","","","","","",""];
 
-    <div id="status">Player X's Turn</div>
+const winningConditions = [
 
-    <div class="board">
-        <div class="cell" data-index="0"></div>
-        <div class="cell" data-index="1"></div>
-        <div class="cell" data-index="2"></div>
-        <div class="cell" data-index="3"></div>
-        <div class="cell" data-index="4"></div>
-        <div class="cell" data-index="5"></div>
-        <div class="cell" data-index="6"></div>
-        <div class="cell" data-index="7"></div>
-        <div class="cell" data-index="8"></div>
-    </div>
+[0,1,2],
+[3,4,5],
+[6,7,8],
+[0,3,6],
+[1,4,7],
+[2,5,8],
+[0,4,8],
+[2,4,6]
 
-    <button id="restart">Restart Game</button>
+];
 
-</div>
+function cellClicked(){
 
-<script src="script.js"></script>
+const index = this.dataset.index;
 
-</body>
-</html>
+if(board[index] !== "" || !gameActive)
+return;
+
+board[index] = currentPlayer;
+this.textContent = currentPlayer;
+this.classList.add(currentPlayer.toLowerCase());
+
+checkWinner();
+
+}
+
+function checkWinner(){
+
+let roundWon = false;
+
+for(let condition of winningConditions){
+
+const a = board[condition[0]];
+const b = board[condition[1]];
+const c = board[condition[2]];
+
+if(a==="" || b==="" || c==="")
+continue;
+
+if(a===b && b===c){
+
+roundWon = true;
+break;
+
+}
+
+}
+
+if(roundWon){
+
+statusText.innerHTML = `🎉 Player ${currentPlayer} Wins!`;
+gameActive = false;
+return;
+
+}
+
+if(!board.includes("")){
+
+statusText.innerHTML = "🤝 It's a Draw!";
+gameActive = false;
+return;
+
+}
+
+currentPlayer = currentPlayer==="X" ? "O":"X";
+
+statusText.innerHTML = `Player ${currentPlayer}'s Turn`;
+
+}
+
+function restartGame(){
+
+board = ["","","","","","","","",""];
+currentPlayer="X";
+gameActive=true;
+
+statusText.innerHTML="Player X's Turn";
+
+cells.forEach(cell=>{
+
+cell.textContent="";
+cell.classList.remove("x");
+cell.classList.remove("o");
+
+});
+
+}
+
+cells.forEach(cell=>cell.addEventListener("click",cellClicked));
+
+restartBtn.addEventListener("click",restartGame);
